@@ -19,3 +19,5 @@
 - On ajoute pour chaque restaurant un tableau de 5 notes entre 0 et 5 : **db.restaurants.find().forEach(function(doc){ db.restaurants.update({_id:doc._id}, {$set:{"reviews": Array.from({length: 5}, () => Math.floor(Math.random() * 6)) }}) })**
 
 L'ensemble des requêtes demandées se trouve dans le fichier ***db.js***.
+
+La configuration du replica set se trouve dans le ***replica-set.conf***.
