@@ -13,31 +13,22 @@ async function main() {
 }
 
 async function getRestaurantById(restaurant_id) {
-    result = await client.db("masterclass_project").collection("restaurants")
-        .findOne({_id: ObjectId(restaurant_id)});
-
-    if (result) {
-        return result;
-    } else {
-        return 'Not finding data ...';
-    }
+    return await client.db("masterclass_project").collection("restaurants")
+        .findOne({_id: ObjectId(restaurant_id)})
 }
 
 async function createRestaurant(query) {
-    result = await client.db("masterclass_project").collection("restaurants")
+    const result = await client.db("masterclass_project").collection("restaurants")
         .insertOne(
             {name: query.name, long_coordinates: query.long_coordinates, lat_coordinates: query.lat_coordinates}
         );
 
-    if (result) {
-        return `Insert new restaurant #${result.insertedId}`;
-    } else {
-        return 'error...';
-    }
+    return `Insert new restaurant #${result.insertedId}`;
+
 }
 
 async function updateRestaurant(restaurant_id, query) {
-    result = await client.db("masterclass_project").collection("restaurants")
+    await client.db("masterclass_project").collection("restaurants")
         .updateOne(
             {_id: ObjectId(restaurant_id)},
             {
@@ -49,53 +40,15 @@ async function updateRestaurant(restaurant_id, query) {
             }
         );
 
-    if (result) {
-        return `Edited restaurant #${restaurant_id}`;
-    } else {
-        return 'error...';
-    }
+    return `Edited restaurant #${restaurant_id}`;
+
 }
 
 async function deleteRestaurant(restaurant_id) {
-    result = await client.db("masterclass_project").collection("restaurants")
+    await client.db("masterclass_project").collection("restaurants")
         .deleteOne({_id: ObjectId(restaurant_id)});
 
-    if (result) {
-        return `Deleted restaurant #${restaurant_id} successful.`;
-    } else {
-        return 'error...';
-    }
-}
-
-async function getAveragePrice() {
-    result = await client.db("masterclass_project").collection("restaurants")
-        .aggregate(
-            [
-                {
-                    $group:
-                        {_id: "", avg_price: {$avg: "$price"}}
-                }
-            ]
-        ).toArray();
-
-    if (result) {
-        return `Average price for all the restaurants is ${result[0].avg_price}`;
-    } else {
-        return 'error...';
-    }
-}
-
-async function getRestaurantRating(restaurant_id) {
-    result = await client.db("masterclass_project").collection("restaurants")
-        .aggregate(
-            [{$project: {_id: "$_id", name: "$name", avg_stars: {$avg: "$reviews"}}}]
-        ).toArray();
-
-    if (result) {
-        return result;
-    } else {
-        return 'error...';
-    }
+    return `Deleted restaurant #${restaurant_id} successful.`;
 }
 
 async function findRestaurantsWithLocation(long_coordinates, lat_coordinates, max_distance) {
@@ -115,12 +68,28 @@ async function findRestaurantsWithLocation(long_coordinates, lat_coordinates, ma
             }
         }).toArray();
 
+    return result;
+}
 
-    if (result) {
-        return result;
-    } else {
-        return 'error...';
-    }
+async function getAveragePrice() {
+    const result = await client.db("masterclass_project").collection("restaurants")
+        .aggregate(
+            [
+                {
+                    $group:
+                        {_id: "", avg_price: {$avg: "$price"}}
+                }
+            ]
+        ).toArray();
+
+    return `Average price for all the restaurants is ${result[0].avg_price}`;
+}
+
+async function getRestaurantRating() {
+    return await client.db("masterclass_project").collection("restaurants")
+        .aggregate(
+            [{$project: {_id: "$_id", name: "$name", avg_stars: {$avg: "$reviews"}}}]
+        ).toArray();
 }
 
 main().catch(console.error);
